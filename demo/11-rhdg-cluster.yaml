@@ -1,0 +1,31 @@
+---
+apiVersion: infinispan.org/v1
+kind: Infinispan
+metadata:
+  annotations:
+    infinispan.org/podTargetLabels: 'domain,user'
+    infinispan.org/targetLabels: domain
+  name: cluster
+  labels:
+    domain: bookshop
+    user: alvaro
+spec:
+  container:
+    cpu: "2000m:100m"
+    extraJvmOpts: '-Duser.timezone="Europe/Madrid"'
+    memory: "1Gi:1Gi"
+  expose:
+    annotations: {}
+    type: Route
+  replicas: 3
+  security:
+    endpointAuthentication: true
+    endpointSecretName: cluster-credentials
+    authorization:
+      enabled: true
+    endpointEncryption:
+      type: Service
+  service:
+    container:
+      ephemeralStorage: true 
+    type: DataGrid

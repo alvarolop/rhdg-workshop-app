@@ -1,0 +1,20 @@
+---
+apiVersion: infinispan.org/v2alpha1
+kind: Cache
+metadata:
+  name: cluster-rest-proto
+spec:
+  clusterName: cluster
+  name:  rest-proto
+  template: |-
+    distributedCache:
+      mode: "SYNC"
+      owners: 2
+      statistics: "true"
+      encoding:
+        key:
+          mediaType: application/x-protostream
+        value:
+          mediaType: application/x-protostream
+  updates:
+    strategy: recreate

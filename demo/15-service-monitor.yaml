@@ -1,0 +1,32 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cluster-service-monitor
+spec:
+  endpoints:
+  - basicAuth:
+      password:
+        key: password
+        name: cluster-generated-operator-secret
+      username:
+        key: username
+        name: cluster-generated-operator-secret
+    bearerTokenSecret:
+      key: ""
+    honorLabels: true
+    interval: 30s
+    path: /metrics
+    port: infinispan-adm
+    scheme: http
+    scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+    - demo
+  selector:
+    matchLabels:
+      app: infinispan-service-admin
+      clusterName: cluster
+      infinispan_cr: cluster
+  targetLabels:
+  - domain

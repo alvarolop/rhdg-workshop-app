@@ -1,0 +1,5 @@
+FROM com.alopezme.hotrodtester.model.Book WHERE title='The Iliad'
+
+FROM com.alopezme.hotrodtester.model.Book WHERE author:'Homer'
+
+FROM com.alopezme.hotrodtester.model.Book WHERE author:"Herman Melville"

@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rhdg-client-config
+data:
+  application.properties: |
+    # Infinispan
+    infinispan.remote.server-list=${DATAGRID_HOST:127.0.0.1}:${DATAGRID_PORT:11222}
+    infinispan.remote.client-intelligence=HASH_DISTRIBUTION_AWARE
+    infinispan.remote.socket-timeout=${DATAGRID_SOCKET_TIMEOUT:2000}
+    infinispan.remote.connect-timeout=${DATAGRID_CONNECT_TIMEOUT:2000}
+    infinispan.remote.max-retries=${DATAGRID_MAX_RETRIES:3}
+
+    # Near caching
+    #infinispan.remote.near-cache-mode=INVALIDATED
+    #infinispan.remote.near-cache-max-entries=5
+    #infinispan.remote.near-cache-name-pattern=book*
+
+    # Activates statistics for actuator
+    infinispan.remote.statistics=true
+    infinispan.remote.jmx=false
+    management.endpoints.web.exposure.include=*
+
+    server.servlet.context-path=/api
+
+    # Security settings. Comment these properties if you are using a non secured server
+    infinispan.remote.use-auth=${DATAGRID_AUTH_ENABLED:false}
+    infinispan.remote.sasl-mechanism=DIGEST-MD5
+    infinispan.remote.auth-realm=default
+    infinispan.remote.auth-server-name=infinispan
+    infinispan.remote.auth-username=admin
+    infinispan.remote.auth-password=password
+
+    # Encryption
+    infinispan.remote.use-ssl=${DATAGRID_SSL_ENABLED:false}
+    infinispan.remote.trust_store_type=PEM
+    infinispan.remote.trust_store_file_name=config/tls.crt
+    infinispan.remote.sni-host-name=${DATAGRID_SSL_SNI_HOST_NAME:rhdg.rhdg8.svc}
+    
+    # Logging
+    logging.config=file:config/logback-spring.xml
+  logback-spring.xml: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!-- https://www.baeldung.com/spring-boot-logging -->
+    <configuration>
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+        <property name="LOGS" value="./logs" />
+
+        <!--    <appender name="Console"-->
+        <!--              class="ch.qos.logback.core.ConsoleAppender">-->
+        <!--        <layout class="ch.qos.logback.classic.PatternLayout">-->
+        <!--            <Pattern>-->
+        <!--                %cyan(%d{ISO8601}) %highlight(%-5level) [%cyan(%t)] %yellow(%C{1.}): %msg%n%throwable-->
+        <!--            </Pattern>-->
+        <!--        </layout>-->
+        <!--    </appender>-->
+
+        <!-- LOG everything at INFO level -->
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+        </root>
+
+        <!-- LOG "com.example*" at TRACE level -->
+        <logger name="org.infinispan.client.hotrod" level="INFO"/>
+
+        <!-- LOG "com.example*" at TRACE level -->
+        <logger name="com.alopezme.hotrodtester" level="DEBUG"/>
+
+    </configuration>

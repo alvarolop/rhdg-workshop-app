@@ -38,5 +38,12 @@ toc::[]
 This repository contains application examples to configure your RHDG clients and servers.
 
 
-== How to install
+== Previous steps
+
+Create the namespaces:
+
+[source, bash]
+----
+oc apply -f extra/00-projects.yaml
+----
 

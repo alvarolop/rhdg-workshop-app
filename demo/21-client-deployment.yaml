@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rhdg-client
+  name: rhdg-client
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: rhdg-client
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: rhdg-client
+      name: rhdg-client
+    spec:
+      containers:
+      - env:
+        - name: DATAGRID_HOST
+          value: cluster
+        - name: DATAGRID_PORT
+          value: "11222"
+        - name: DATAGRID_AUTH_ENABLED
+          value: "true"
+        - name: DATAGRID_SSL_ENABLED
+          value: "true"
+        - name: DATAGRID_SSL_SNI_HOST_NAME
+          value: cluster.demo.svc
+        image: quay.io/alopezme/rhdg8-client:latest
+        imagePullPolicy: Always
+        name: rhdg-client
+        ports:
+        - containerPort: 8080
+          name: tcp-8080
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: /deployments/config/application.properties
+          name: app-config
+          readOnly: true
+          subPath: application.properties
+        - name: app-config
+          mountPath: /deployments/config/logback-spring.xml
+          readOnly: true
+          subPath: logback-spring.xml
+        - mountPath: /deployments/config/tls.crt
+          name: ssl-certificate
+          readOnly: true
+          subPath: tls.crt
+      volumes:
+      - configMap:
+          name: rhdg-client-config
+        name: app-config
+      - name: ssl-certificate
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          secretName: cluster-cert-secret

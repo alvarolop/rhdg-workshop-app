@@ -1,0 +1,24 @@
+---
+apiVersion: infinispan.org/v2alpha1
+kind: Cache
+metadata:
+  name: cluster-replicated-expiration
+spec:
+  clusterName: cluster
+  name:  replicated-expiration
+  template: |-
+    replicatedCache:
+      mode: "SYNC"
+      statistics: "true"
+      encoding:
+        key:
+          mediaType: application/x-protostream
+        value:
+          mediaType: application/x-protostream
+      expiration:
+        lifespan: "60000"
+      memory:
+        maxSize: "200MB"
+        whenFull: "REMOVE"
+  updates:
+    strategy: recreate
